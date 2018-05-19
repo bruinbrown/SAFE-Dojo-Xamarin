@@ -20,6 +20,19 @@ type Xaml =
 
         XamlElement(typeof<Microcharts.Chart>, create, update, Map.empty)
 
+    static member Map(latitude, longitude) =
+        let create () =
+            let position = Position(latitude, longitude)
+            let map = Map(MapSpan.FromCenterAndRadius(position, Distance(500.)))
+            map.HeightRequest <- 200.
+            //map.Pins.Add(Pin(Position = position))
+            box map
+
+        let update prevAttribs source target =
+            ()
+
+        XamlElement(typeof<Map>, create, update, Map.empty)
+
 module Validation =
     open System.Text.RegularExpressions
     let validatePostcode postcode =
@@ -129,6 +142,7 @@ let locationView (location : LocationResponse) =
     Xaml.StackLayout(
         children = [
             yield Xaml.Label(text = sprintf "%s is in %s, %s. It's %.1fKM from London" location.Postcode location.Location.Town location.Location.Region location.DistanceToLondon)
+            yield Xaml.Map(location.Location.LatLong.Latitude, location.Location.LatLong.Longitude)
         ]
     )
 
